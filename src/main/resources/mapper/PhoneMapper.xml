@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qfedu.phone.dao.PhoneMapper">
+    <resultMap id="phoneMap" type="com.qfedu.phone.entity.Phone">
+        <id property="id" column="id"/>
+        <result property="phonename" column="phonename"/>
+        <result property="brand" column="btand"/>
+        <result property="memory" column="memory"/>
+        <result property="colour" column="colour"/>
+        <result property="quantity" column="quantity"/>
+        <result property="price" column="price"/>
+        <result property="img" column="img"/>
+    </resultMap>
+
+    <sql id="phoneColumns">${alias}.id, ${alias}.phonename, ${alias}.brand, ${alias}.memory, ${alias}.colour, ${alias}.quantity, ${alias}.price, ${alias}.img</sql>
+
+    <!--按照手机价格降序展示-->
+    <select id="findPhonePrice" resultMap="phoneMap">
+        select
+        <include refid="phoneColumns">
+            <property name="alias" value="t1"/>
+        </include>
+        from phoneinfo t1
+        where t1.id = #{id}
+        order by t1.price desc
+    </select>
+
+    <!--按照手机销量升序展示-->
+    <select id="findPhoneList" resultMap="phoneMap">
+        select
+        <include refid="phoneColumns">
+            <property name="alias" value="t1"/>
+        </include>
+        from phoneinfo t1
+        where t1.id = #{id}
+        order by t1.quantity asc
+    </select>
+
+    <!--添加购买手机记录-->
+    <insert id="insert">
+        insert into phoneinfo(phonename, brand, memory, colour, quanlity, price, img)
+        values (#{phonename}, #{brand}, #{memory}, #{colour}, #{quanlity}, #{price}, #{img})
+    </insert>
+
+    <!--分页-->
+    <select id="page" resultMap="phoneMap">
+        select
+        <include refid="phoneColumns">
+            <property name="alias" value="t2"/>
+        </include>
+        from phoneinfo t2
+        order by t2.oprice asc
+        <include refid="pagger.pagger"/>
+    </select>
+
+    <select id="pageCount" resultType="int">
+        select
+        count(t2.id)
+        from phoneinfo t2
+    </select>
+</mapper>
